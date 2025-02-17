@@ -1,4 +1,78 @@
 // src/index.ts
+export class Variable {
+    symbol: string;
+    index: Variable;
+    
+    constructor(symbol: string) {
+        this.symbol = symbol;
+        this.index = this;
+    }
+}
+
+export class Monomial {
+    coefficient: number;
+    variables: Variable[];
+    exponent: number;
+
+    constructor(coefficient: number, variables: Variable[], exponent: number) {
+        this.coefficient = coefficient;
+        this.variables = variables;
+        this.exponent = exponent;
+    }
+    
+    isSimilarTo(monomial: Monomial): boolean {
+        if (this.variables.length !== monomial.variables.length) {
+            return false;
+        }
+        for (let i = 0; i < this.variables.length; i++) {
+            if (this.variables[i].symbol !== monomial.variables[i].symbol || this.variables[i].index !== monomial.variables[i].index) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    add(monomial: Monomial): Monomial {
+        if (!this.isSimilarTo(monomial)) {
+            throw new Error("Monomials are not similar.");
+        }
+        return new Monomial(this.coefficient + monomial.coefficient, this.variables, this.exponent);
+    }
+
+    subtract(monomial: Monomial): Monomial {
+        if (!this.isSimilarTo(monomial)) {
+            throw new Error("Monomials are not similar.");
+        }
+        return new Monomial(this.coefficient - monomial.coefficient, this.variables, this.exponent);
+
+    }
+
+    simplify(monomial: Monomial): Monomial[]{
+        if (!this.isSimilarTo(monomial)) {
+            return [this, monomial];
+        }
+        return [this.add(monomial)];
+    }
+}
+
+export class Polynomial {
+    protected monomials: Monomial[];
+
+    constructor(monomials: Monomial[]) {
+        this.monomials = monomials;
+    }
+
+    simplify(polynomial: Polynomial): Polynomial {
+        let result: Monomial[] = [];
+        for (let i = 0; i < this.monomials.length; i++) {
+            for (let j = 0; j < polynomial.monomials.length; j++) {
+                let simplified = this.monomials[i].simplify(polynomial.monomials[j]);
+                result = result.concat(simplified);
+            }
+        }
+        return new Polynomial(result);
+    }
+}
 
 /**
  * Adds two numbers.

@@ -1,6 +1,6 @@
 // __tests__/index.test.ts
 
-import { add, subtract, multiply, divide } from "../src/index";
+import { add, subtract, multiply, divide, Variable, Monomial, Polynomial } from "../src/index";
 
 describe("Math Library", () => {
   test("adds two numbers", () => {
@@ -23,3 +23,16 @@ describe("Math Library", () => {
     expect(() => divide(10, 0)).toThrow("Division by zero is not allowed.");
   });
 });
+
+describe("Monomial Methods", () => {
+    const x = new Variable("x");
+
+    test("simplify monomials", () => {
+        const m1 = new Monomial(1, [x], 1);
+        const m2 = new Monomial(1, [x], 1);
+        const simplified = m1.simplify(m2);
+        expect(simplified[0].variables[0]).toEqual(x);
+        expect(simplified[0].coefficient).toEqual(2);
+    });   
+});
+
